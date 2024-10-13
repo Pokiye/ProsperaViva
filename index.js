@@ -1,18 +1,20 @@
 import express from "express";
 import mongoose from "mongoose";
-import ejsMate from "ejsMate";
+import ejsMate from "ejs-mate";
 import session from "express-session";
 import path from "path";
 import flash from "connect-flash";
-import ExpressError from "./utils/ExpressError";
+import ExpressError from "./utils/ExpressError.js";
 import methodOverride from "method-override";
 import passport from "passport";
 import LocalStrategy from "passport-local";
-import User from "./models/user";
+import User from "./models/user.js";
 import helmet from "helmet";
 
 import MongoStore from "connect-mongo";
 import mongoSanitize from "express-mongo-sanitize";
+
+const __dirname = path.resolve();
 
 const dbUrl = "mongodb://127.0.0.1:27017/prosperaviva";
 
@@ -39,6 +41,8 @@ app.use(
     })
 );
 
+const secret = "thisshouldbeabettersecret!";
+
 const store = MongoStore.create({
     mongoUrl: dbUrl,
     touchAfter: 24 * 60 * 60,
@@ -54,7 +58,7 @@ store.on("error", function (e) {
 const sessionConfig = {
     store,
     name: "session",
-    // secret,
+    secret,
     resave: false,
     saveUnlimited: true,
     cookie: {
@@ -95,11 +99,15 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use("/", userRoutes);
+// app.use("/", userRoutes);
+
+// app.get("/", (req, res) => {
+//     res.render("home");
+// });
 
 app.get("/", (req, res) => {
-    res.render("home");
-});
+    res.sendFile(path.join(__dirname, "views", "public/index.html"));
+})
 
 app.all("*", (req, res, next) => {
     next(new ExpressError("Page Not Found", 404));
