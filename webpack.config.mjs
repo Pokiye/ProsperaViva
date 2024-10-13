@@ -1,4 +1,5 @@
 import path from "path";
+import Dotenv from "dotenv-webpack";
 const __dirname = path.resolve();
 
 export default {
@@ -28,7 +29,10 @@ export default {
             directory: path.join(__dirname, "views", 'public'),
         },
         compress: true,
-        port: 3000,
+        port: process.env.FRONTEND_PORT || 3001,
         open: true,
-    }
+    },
+    plugins: [
+        new Dotenv()
+    ]
 };

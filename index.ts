@@ -4,7 +4,6 @@ import ejsMate from "ejs-mate";
 import session from "express-session";
 import path from "path";
 import flash from "connect-flash";
-import ExpressError from "./utils/ExpressError";
 import methodOverride from "method-override";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
@@ -13,6 +12,17 @@ import helmet from "helmet";
 import MongoStore from "connect-mongo";
 import mongoSanitize from "express-mongo-sanitize";
 import { EventEmitter } from "events";
+import ExpressError from "./utils/ExpressError";
+import axios from "axios";
+import cors from "cors";
+import dotenv from "dotenv";
+import OpenAI from "openai";
+
+dotenv.config();
+
+const openai = new OpenAI({
+    project: process.env.OPENAI_PROJECT_ID,
+});
 
 const __dirname = path.resolve();
 
@@ -27,6 +37,8 @@ db.once("open", () => {
 });
 
 const app = express();
+app.use(cors());
+app.use(express.json());
 
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
@@ -69,6 +81,13 @@ const sessionConfig: any = {
     },
 };
 
+app.use(session({
+    secret: process.env.SESSION_SECRET || "thisisasecretkey",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set to true if using HTTPS
+}));
+
 app.use(flash());
 app.use(helmet());
 
@@ -101,6 +120,8 @@ passport.deserializeUser(async (id: string, done) => {
     }
 });
 
+
+
 app.use((req: Request, res: Response, next: NextFunction) => {
     res.locals.currentUser = req.user;
     res.locals.success = req.flash("success");
@@ -116,9 +137,41 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 app.use(express.static(path.join(__dirname, "views", "public")));
 
+app.post("/api/advice", async (req: Request, res: Response) => {
+    console.log("received request");
+    const { userInput } = req.body;
+    if (!userInput || userInput.trim() === "") {
+        return res.status(400).json({ error: "Invalid input" });
+    }
+    try {
+        console.log("attempt");
+        const response = await axios.post(
+            "https://api.openai.com/v1/chat/completions",
+            {
+                model: "gpt-3.5-turbo",
+                messages: [{ role: "user", content: `Provide financial advice based on the following input: ${userInput}` }],
+                max_tokens: 150,
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        console.log("Advice generated succesfully");
+        res.json({ advice: response.data.choices[0].message.content });
+    } catch (error) {
+        const err = error as any;
+        console.error("Error generating advice", err.response ? err.response.data : err.message);
+        res.status(500).send("Error generating advice");
+    }
+});
+
 app.get("/", (req: Request, res: Response) => {
     res.sendFile(path.join(__dirname, "views", "public", "index.html"));
 });
+
 
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
     next(new ExpressError("Page Not Found", 404));
@@ -132,7 +185,8 @@ app.use(
     }
 );
 
-const PORT = 3000;
+
+const PORT = process.env.BACKEND_PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Serving on port ${PORT}`);
 });
