@@ -1,6 +1,6 @@
 /* src/App.css */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
     background-color: #fff;
     margin: 0;
     padding: 0;
@@ -8,7 +8,7 @@ body {
     justify-content: center;
     align-items: flex-start; /* Align items to the start (top) */
     height: 100vh;
-    padding-top: 20vh; /* Add padding to push the content slightly towards the top */
+    padding-top: 10vh; /* Add padding to push the content slightly towards the top */
 }
 
 .title {
@@ -17,4 +17,46 @@ body {
     text-align: center;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
     margin: 0;
+}
+
+/* Add custom styles for the title */
+.title-container {
+    text-align: center;
+    margin-bottom: 2rem;
+    margin-top: -10vh;
+}
+
+.title-container h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.title-container h2 {
+    font-size: 1.5rem;
+    color: #6c757d;
+}
+
+.title-container img {
+    width: 500px; /* Adjust the width as needed */
+    height: auto; /* Maintain aspect ratio */
+    margin-bottom: 1rem;
+    position: relative;
+    left: -20px;
+    padding-bottom: 5rem;
+}
+
+.form-control {
+    border-radius: 0.25rem; /* Rounded corners for input */
+}
+
+.btn-primary {
+    border-radius: 1.5rem; /* More rounded corners for button */
+    font-size: 1rem;
+    padding: 0.5rem 1.5rem;
+}
+
+.alert {
+    font-size: 1rem;
+    margin-top: 1rem;
 }

@@ -5,7 +5,7 @@ import "./App.css";
 const App: React.FC = () => {
     const [userInput, setUserInput] = useState("");
     const [advice, setAdvice] = useState("");
-    
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
@@ -18,20 +18,37 @@ const App: React.FC = () => {
     };
 
     return (
-        <>
-            <h1>Prospera Viva!</h1>
-            <h2>Your personal financial empowerment and budgeting tracking app</h2>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    value={userInput}
-                    onChange={(e) => setUserInput(e.target.value)}
-                    placeholder="Enter your financial question"
-                />
-                <button type="submit">Get Advice</button>
-            </form>
-            {advice && <p>{advice}</p>}
-        </>
+        <div className="container mt-5">
+            <div className="row justify-content-center">
+                <div className="col-md-8">
+                    <div className="title-container">
+                        <img src="/prosperaviva-logo.png" alt="Prospera Viva Logo" />
+                        <h2>Your personal financial empowerment and budgeting tracking app</h2>
+                    </div>
+                    <form onSubmit={handleSubmit} className="mb-4">
+                        <div className="input-group mb-3">
+                            <input
+                                type="text"
+                                className="form-control"
+                                value={userInput}
+                                onChange={(e) => setUserInput(e.target.value)}
+                                placeholder="Enter your financial question"
+                            />
+                            <div className="input-group-append">
+                                <button type="submit" className="btn btn-primary" title="Send">
+                                    <i className="fas fa-paper-plane"></i> 
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    {advice && (
+                        <div className="alert alert-success" role="alert">
+                            {advice}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
     );
 };
 

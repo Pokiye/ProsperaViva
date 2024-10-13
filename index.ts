@@ -1,3 +1,23 @@
+/*
+
+THINGS TO NOTE TO THOSE LOOKING AT THE SOURCE CODE:
+
+TO RUN THIS APP ON YOUR LOCAL MACHINE, YOU WILL NEED TO CREATE A .env FILE IN THE ROOT DIRECTORY OF THE PROJECT. Please see the README.md for more information.
+
+EJS is incorporated to handle newer features of the app, such as including different requests to the server and render them on the client side.
+EJS is also created to handle error handling with any requests that are made to the server, such as 404 and 500 errors.
+
+MongoDB is outlined with Mongoose user schemes to incorporate user authentication and user data storage.
+NOTE: This is an unfinished feature and will be updated in the future.
+
+Passport is incorporated to handle user authentication and user data storage.
+
+Helmet, MongoStore, MongoSanitize, and Express-Session are incorporated to handle security features of the app. This includes handling session data, sanitizing user input, and preventing cross-site scripting attacks. Ultimately, this makes up the security features of the app.
+
+Many features here were built previously but could not be finished due to time constraints and the project being solo. These features will be updated in the future.
+
+*/
+
 import express, { Request, Response, NextFunction } from "express";
 import mongoose, { Document } from "mongoose";
 import ejsMate from "ejs-mate";
@@ -23,6 +43,15 @@ dotenv.config();
 const openai = new OpenAI({
     project: process.env.OPENAI_PROJECT_ID,
 });
+
+// inline mongoose schema
+
+const adviceSchema = new mongoose.Schema({
+    userInput: { type: String, required: true },
+    advice: { type: String, required: true },
+});
+
+const Advice = mongoose.model("Advice", adviceSchema);
 
 const __dirname = path.resolve();
 
@@ -138,13 +167,11 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(express.static(path.join(__dirname, "views", "public")));
 
 app.post("/api/advice", async (req: Request, res: Response) => {
-    console.log("received request");
     const { userInput } = req.body;
     if (!userInput || userInput.trim() === "") {
         return res.status(400).json({ error: "Invalid input" });
     }
     try {
-        console.log("attempt");
         const response = await axios.post(
             "https://api.openai.com/v1/chat/completions",
             {
@@ -159,7 +186,6 @@ app.post("/api/advice", async (req: Request, res: Response) => {
                 },
             }
         );
-        console.log("Advice generated succesfully");
         res.json({ advice: response.data.choices[0].message.content });
     } catch (error) {
         const err = error as any;
