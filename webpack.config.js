@@ -4,8 +4,8 @@ const __dirname = path.resolve();
 export default {
     entry: './src/index.tsx',
     output: {
+        filename: 'bundle.js',
         path: path.resolve(__dirname, 'public'),
-        filename: 'bundle.js'
     },
     module: {
         rules: [
@@ -24,8 +24,11 @@ export default {
         extensions: ['.ts', '.tsx', '.js', '.jsx']
     },
     devServer: {
-        contentBase: path.join(__dirname, 'public'),
+        static: {
+            directory: path.join(__dirname, "views", 'public'),
+        },
         compress: true,
-        port: 9000
+        port: 3000,
+        open: true,
     }
 };

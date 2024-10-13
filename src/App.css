@@ -1,17 +1,18 @@
 /* src/App.css */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    background-color: #fff;
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Align items to the start (top) */
     height: 100vh;
+    padding-top: 20vh; /* Add padding to push the content slightly towards the top */
 }
 
 .title {
-    color: #333;
+    color: #333; /* Dark gray color */
     font-size: 3rem;
     text-align: center;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
